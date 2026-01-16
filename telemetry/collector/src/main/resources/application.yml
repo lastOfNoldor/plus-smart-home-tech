@@ -1,0 +1,12 @@
+# src/main/resources/application.yml
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+
+kafka:
+  topics:
+    sensors: telemetry.sensors.v1
+    hubs: telemetry.hubs.v1
+
+server:
+  port: 8080

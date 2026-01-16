@@ -25,15 +25,15 @@ public class GeneralAvroSerializer implements Serializer<SpecificRecordBase> {
     @Override
     public byte[] serialize(String topic, SpecificRecordBase data) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-        byte[] result = null;
-        encoder = encoderFactory.binaryEncoder(out, encoder);
-        if (data != null) {
-            DatumWriter<SpecificRecordBase> writer = new SpecificDatumWriter<>(data.getSchema());
-            writer.write(data, encoder);
-            encoder.flush();
-            result = out.toByteArray();
-        }
-        return result;
+            byte[] result = null;
+            encoder = encoderFactory.binaryEncoder(out, encoder);
+            if (data != null) {
+                DatumWriter<SpecificRecordBase> writer = new SpecificDatumWriter<>(data.getSchema());
+                writer.write(data, encoder);
+                encoder.flush();
+                result = out.toByteArray();
+            }
+            return result;
 
         } catch (IOException e) {
             throw new RuntimeException(e);

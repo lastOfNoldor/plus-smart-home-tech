@@ -17,7 +17,7 @@ import ru.yandex.practicum.telemetry.collector.service.handler.SensorEventHandle
 
 import java.util.List;
 import java.util.Map;
-
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,8 +29,8 @@ public class EventController {
     private final Map<HubEventType, HubEventHandler> hubEventHandlers;
 
     public EventController(List<SensorEventHandler> sensorEventHandlers, List<HubEventHandler> hubEventHandlers) {
-        this.sensorEventHandlers = sensorEventHandlers.stream().collect(Collectors.toMap(SensorEventHandler::getMessageType, Function.indentity()));
-        this.hubEventHandlers = hubEventHandlers.stream().collect(Collectors.toMap(HubEventHandler::getMessageType, Function.indentity()));
+        this.sensorEventHandlers = sensorEventHandlers.stream().collect(Collectors.toMap(SensorEventHandler::getMessageType, Function.identity()));
+        this.hubEventHandlers = hubEventHandlers.stream().collect(Collectors.toMap(HubEventHandler::getMessageType, Function.identity()));
     }
 
     @PostMapping("/sensors")
@@ -51,5 +51,6 @@ public class EventController {
             throw new IllegalArgumentException("Не могу найти обработчик для события " + request.getType());
         }
         handler.handle(request);
+
     }
 }
