@@ -38,7 +38,7 @@ public class ScenarioAddedHubEventHandler extends BaseHubEventHandler<ScenarioAd
     private List<ScenarioConditionAvro> conditionsMapToAvro(List<ScenarioCondition> list) {
         List<ScenarioConditionAvro> result = new ArrayList<>();
         for (ScenarioCondition condition : list) {
-            result.add(ScenarioConditionAvro.newBuilder().setSensorId(condition.getSensorId()).setOperation(ConditionOperationAvro.valueOf(condition.getOperation().name())).setValue(condition.getValue()).build());
+            result.add(ScenarioConditionAvro.newBuilder().setSensorId(condition.getSensorId()).setType(ConditionTypeAvro.valueOf(condition.getType().name())).setOperation(ConditionOperationAvro.valueOf(condition.getOperation().name())).setValue(condition.getValue()).build());
         }
         return result;
     }

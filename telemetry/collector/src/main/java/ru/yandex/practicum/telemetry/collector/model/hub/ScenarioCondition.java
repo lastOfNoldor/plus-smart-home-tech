@@ -13,6 +13,7 @@ import lombok.ToString;
 public class ScenarioCondition {
     @NotNull
     private String sensorId;
+    private ConditionType type;
     private ConditionOperation operation;
     private Integer intValue;
     private Boolean boolValue;
