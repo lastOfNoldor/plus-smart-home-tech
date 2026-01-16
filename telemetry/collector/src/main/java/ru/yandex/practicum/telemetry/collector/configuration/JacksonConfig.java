@@ -10,8 +10,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public class JacksonConfig {
     @Bean
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
-        return new Jackson2ObjectMapperBuilder()
-                .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
-                .serializationInclusion(JsonInclude.Include.NON_NULL);
+        return new Jackson2ObjectMapperBuilder().propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).serializationInclusion(JsonInclude.Include.NON_NULL);
     }
 }
