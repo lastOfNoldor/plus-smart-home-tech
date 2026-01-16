@@ -14,7 +14,11 @@ import java.time.Instant;
 @Setter
 @ToString
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", defaultImpl = ErrorEventType.class)
-@JsonSubTypes({@JsonSubTypes.Type(value = ClimateSensor.class, name = "CLIMATE_SENSOR_EVENT"), @JsonSubTypes.Type(value = LightSensor.class, name = "LIGHT_SENSOR_EVENT"), @JsonSubTypes.Type(value = MotionSensor.class, name = "MOTION_SENSOR_EVENT"), @JsonSubTypes.Type(value = SwitchSensor.class, name = "SWITCH_SENSOR_EVENT"), @JsonSubTypes.Type(value = TemperatureSensor.class, name = "TEMPERATURE_SENSOR_EVENT")})
+@JsonSubTypes({@JsonSubTypes.Type(value = ClimateSensor.class, name = "CLIMATE_SENSOR_EVENT"),
+        @JsonSubTypes.Type(value = LightSensor.class, name = "LIGHT_SENSOR_EVENT"),
+        @JsonSubTypes.Type(value = MotionSensor.class, name = "MOTION_SENSOR_EVENT"),
+        @JsonSubTypes.Type(value = SwitchSensor.class, name = "SWITCH_SENSOR_EVENT"),
+        @JsonSubTypes.Type(value = TemperatureSensor.class, name = "TEMPERATURE_SENSOR_EVENT")})
 public abstract class SensorEvent {
     @NotNull
     private String id;

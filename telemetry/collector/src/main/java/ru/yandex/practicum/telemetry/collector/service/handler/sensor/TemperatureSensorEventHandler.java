@@ -23,7 +23,12 @@ public class TemperatureSensorEventHandler extends BaseSensorEventHandler<Temper
     protected TemperatureSensorAvro mapToAvro(SensorEvent event) {
         TemperatureSensor dto = (TemperatureSensor) event;
 
-        return TemperatureSensorAvro.newBuilder().setId(dto.getId()).setHubId(dto.getHubId()).setTimestamp(dto.getTimestamp()).setTemperatureC(dto.getTemperatureC()).setTemperatureF(dto.getTemperatureF()).build();
+        return TemperatureSensorAvro.newBuilder()
+                .setId(dto.getId())
+                .setHubId(dto.getHubId())
+                .setTimestamp(dto.getTimestamp())
+                .setTemperatureC(dto.getTemperatureC())
+                .setTemperatureF(dto.getTemperatureF()).build();
     }
 
 }
