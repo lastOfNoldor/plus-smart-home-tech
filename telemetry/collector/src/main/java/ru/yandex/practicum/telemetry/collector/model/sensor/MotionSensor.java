@@ -18,6 +18,6 @@ public class MotionSensor extends SensorEvent {
 
     @Override
     public SensorEventType getType() {
-        return SensorEventType.MOTION_SENSOR_EVENT;
+        return SensorEventType.MOTION_SENSOR;
     }
 }
