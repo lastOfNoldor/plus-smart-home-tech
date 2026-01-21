@@ -1,12 +1,16 @@
 package ru.yandex.practicum.telemetry.collector.service.handler.sensor;
 
+import com.google.protobuf.Timestamp;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.grpc.telemetry.sensor_event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
-import ru.yandex.practicum.telemetry.collector.model.sensor.SensorEvent;
+import ru.yandex.practicum.telemetry.collector.model.sensor.SensorEventType;
 import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
 import ru.yandex.practicum.telemetry.collector.service.handler.SensorEventHandler;
+
+import java.time.Instant;
 
 @Slf4j
 @Component
@@ -18,18 +22,25 @@ public abstract class BaseSensorEventHandler<T extends SpecificRecordBase> imple
         this.producer = producer;
     }
 
-    protected abstract T mapToAvro(SensorEvent event);
+    protected abstract T mapToAvro(SensorEventProto event);
 
     @Override
-    public void handle(SensorEvent event) {
-        if (!event.getType().equals(getMessageType())) {
-            throw new IllegalArgumentException("Неизвестный тип события: " + event.getType());
+    public void handle(SensorEventProto proto) {
+        SensorEventType type = SensorEventType.valueOf(proto.getPayloadCase().name());
+        if (!type.equals(getMessageType())) {
+            throw new IllegalArgumentException("Неизвестный тип события: " + type);
         }
-        T payload = mapToAvro(event);
 
-        SensorEventAvro eventAvro = SensorEventAvro.newBuilder().setId(event.getId()).setHubId(event.getHubId()).setTimestamp(event.getTimestamp()).setPayload(payload).build();
+        T payload = mapToAvro(proto);
+        Instant time = convertTimestamp(proto.getTimestamp());
+        SensorEventAvro eventAvro = SensorEventAvro.newBuilder().setId(proto.getId()).setHubId(proto.getHubId()).setTimestamp(time).setPayload(payload).build();
 
-        producer.send(eventAvro, event.getHubId(), event.getTimestamp(), SENSOR_EVENTS_TOPIC);
+        producer.send(eventAvro, proto.getHubId(), time, SENSOR_EVENTS_TOPIC);
         log.info("отправленное Sensor event сообщение: {}", eventAvro);
     }
+
+    private Instant convertTimestamp(Timestamp timestamp) {
+        return Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
+    }
+
 }
