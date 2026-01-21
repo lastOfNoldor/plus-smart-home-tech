@@ -16,6 +16,6 @@ public class LightSensor extends SensorEvent {
 
     @Override
     public SensorEventType getType() {
-        return SensorEventType.LIGHT_SENSOR_EVENT;
+        return SensorEventType.LIGHT_SENSOR;
     }
 }
