@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package telemetry.message.event;
+package telemetry.messages;
 
 option java_multiple_files = true;
-option java_package = "ru.yandex.practicum.grpc.telemetry.event";
+option java_package = "ru.yandex.practicum.grpc.telemetry.hub_event";
 
 import "google/protobuf/timestamp.proto";  // правильный импорт
 
