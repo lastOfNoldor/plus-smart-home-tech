@@ -9,11 +9,10 @@ import org.apache.kafka.common.serialization.Serializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 public class GeneralAvroSerializer implements Serializer<SpecificRecordBase> {
-    private final EncoderFactory encoderFactory;
-    private BinaryEncoder encoder;
-
+    private EncoderFactory encoderFactory;
     public GeneralAvroSerializer() {
         this(EncoderFactory.get());
     }
@@ -23,10 +22,15 @@ public class GeneralAvroSerializer implements Serializer<SpecificRecordBase> {
     }
 
     @Override
+    public void configure(Map<String, ?> configs, boolean isKey) {
+        this.encoderFactory = EncoderFactory.get();
+    }
+
+    @Override
     public byte[] serialize(String topic, SpecificRecordBase data) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             byte[] result = null;
-            encoder = encoderFactory.binaryEncoder(out, encoder);
+            BinaryEncoder encoder = encoderFactory.binaryEncoder(out, null);
             if (data != null) {
                 DatumWriter<SpecificRecordBase> writer = new SpecificDatumWriter<>(data.getSchema());
                 writer.write(data, encoder);
