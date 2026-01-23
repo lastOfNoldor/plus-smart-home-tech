@@ -1,10 +1,10 @@
-package ru.yandex.practicum.aggregator.telemetry;
+package ru.yandex.practicum.telemetry.aggregator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import ru.yandex.practicum.aggregator.telemetry.service.AggregationStarter;
+import ru.yandex.practicum.telemetry.aggregator.service.AggregationStarter;
 
 @Slf4j
 @SpringBootApplication

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.aggregator.telemetry.config;
+package ru.yandex.practicum.telemetry.aggregator.config;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;

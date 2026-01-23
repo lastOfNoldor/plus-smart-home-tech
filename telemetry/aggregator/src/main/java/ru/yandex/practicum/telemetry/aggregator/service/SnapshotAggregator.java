@@ -1,4 +1,4 @@
-package ru.yandex.practicum.aggregator.telemetry.service;
+package ru.yandex.practicum.telemetry.aggregator.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
