@@ -3,6 +3,11 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
 
+grpc:
+  server:
+    port: 59091
+    enable-reflection: true
+
 kafka:
   topics:
     sensors: telemetry.sensors.v1
