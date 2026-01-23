@@ -6,7 +6,7 @@ protocol SensorsSnapshotProtocol {
     record SensorsSnapshotAvro {
         string hubId;
         timestamp_ms timestamp;
-        map<SensorStateAvro> sensorsState; // набор состояний, где ключ - id устройства
+        map<SensorStateAvro> sensorsState;
     }
 
     record SensorStateAvro {

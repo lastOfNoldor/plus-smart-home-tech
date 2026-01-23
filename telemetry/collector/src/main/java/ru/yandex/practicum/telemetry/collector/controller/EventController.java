@@ -13,7 +13,7 @@ import ru.yandex.practicum.telemetry.collector.model.sensor.SensorEventType;
 import ru.yandex.practicum.telemetry.collector.service.handler.HubEventHandler;
 import ru.yandex.practicum.telemetry.collector.service.handler.SensorEventHandler;
 import net.devh.boot.grpc.server.service.GrpcService;
-
+import ru.yandex.practicum.telemetry.collector.util.GrpcRequestValidator;
 
 
 import java.util.List;
@@ -23,13 +23,16 @@ import java.util.stream.Collectors;
 
 @GrpcService
 @Slf4j
+
 public class EventController extends CollectorControllerGrpc.CollectorControllerImplBase {
     private final Map<SensorEventType, SensorEventHandler> sensorEventHandlers;
     private final Map<HubEventType, HubEventHandler> hubEventHandlers;
+    private final GrpcRequestValidator validator;
 
-    public EventController(List<SensorEventHandler> sensorEventHandlers, List<HubEventHandler> hubEventHandlers) {
+    public EventController(List<SensorEventHandler> sensorEventHandlers, List<HubEventHandler> hubEventHandlers, GrpcRequestValidator validator) {
         this.sensorEventHandlers = sensorEventHandlers.stream().collect(Collectors.toMap(SensorEventHandler::getMessageType, Function.identity()));
         this.hubEventHandlers = hubEventHandlers.stream().collect(Collectors.toMap(HubEventHandler::getMessageType, Function.identity()));
+        this.validator = validator;
     }
 
     @Override
@@ -37,17 +40,9 @@ public class EventController extends CollectorControllerGrpc.CollectorController
         try {
             log.info("SensorEvent grpc: {}", request);
             SensorEventProto.PayloadCase payloadCase = request.getPayloadCase();
-            if (payloadCase == SensorEventProto.PayloadCase.PAYLOAD_NOT_SET) {
-                throw Status.INVALID_ARGUMENT
-                        .withDescription("Не задан payload события")
-                        .asRuntimeException();
-            }
+            validator.validateSensorPayload(payloadCase);
             SensorEventHandler handler = sensorEventHandlers.get(SensorEventType.valueOf(payloadCase.name()));
-            if (handler == null) {
-                throw Status.UNIMPLEMENTED
-                        .withDescription("Не поддерживаемый тип события датчика: " + payloadCase)
-                        .asRuntimeException();
-            }
+            validator.validateSensorHandler(handler, payloadCase);
             handler.handle(request);
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
@@ -65,17 +60,9 @@ public class EventController extends CollectorControllerGrpc.CollectorController
         try {
             log.info("HubEvent grpc: {}", request);
             HubEventProto.PayloadCase payloadCase = request.getPayloadCase();
-            if (payloadCase == HubEventProto.PayloadCase.PAYLOAD_NOT_SET) {
-                throw Status.INVALID_ARGUMENT
-                        .withDescription("Не задан payload события")
-                        .asRuntimeException();
-            }
+            validator.validateHubPayload(payloadCase);
             HubEventHandler handler = hubEventHandlers.get(ru.yandex.practicum.telemetry.collector.model.hub.HubEventType.valueOf(payloadCase.name()));
-            if (handler == null) {
-                throw Status.UNIMPLEMENTED
-                        .withDescription("Не поддерживаемый тип события датчика: " + payloadCase)
-                        .asRuntimeException();
-            }
+            validator.validateHubHandler(handler,payloadCase);
             handler.handle(request);
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
@@ -87,4 +74,5 @@ public class EventController extends CollectorControllerGrpc.CollectorController
             ));
         }
     }
+
 }
