@@ -8,11 +8,11 @@ import ru.yandex.practicum.aggregator.telemetry.service.AggregationStarter;
 
 @Slf4j
 @SpringBootApplication
-public class AggregatorApplication {
+public class Aggregator {
 
     public static void main(String[] args) {
         log.info("Запуск сервиса Aggregator...");
-        ConfigurableApplicationContext context = SpringApplication.run(AggregatorApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(Aggregator.class, args);
         AggregationStarter aggregator = context.getBean(AggregationStarter.class);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
