@@ -3,6 +3,8 @@ package ru.yandex.practicum.analyzer.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.analyzer.mapper.ScenarioMapper;
+import ru.yandex.practicum.analyzer.model.Scenario;
 import ru.yandex.practicum.analyzer.repository.ActionRepository;
 import ru.yandex.practicum.analyzer.repository.ConditionRepository;
 import ru.yandex.practicum.analyzer.repository.ScenarioRepository;
@@ -11,6 +13,8 @@ import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
 import ru.yandex.practicum.telemetry.collector.model.hub.*;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class HubEventService {
@@ -18,6 +22,7 @@ public class HubEventService {
     private final ConditionRepository conditionRepo;
     private final ActionRepository actionRepo;
     private final SensorRepository sensorRepo;
+    private final ScenarioMapper scenarioMapper;
 
 
     public void processEvent(HubEventAvro event) {
@@ -54,6 +59,21 @@ public class HubEventService {
         throw new IllegalArgumentException("Unknown payload type");
     }
 
+    @Transactional
+    private void processScenarioAdded(HubEventAvro event) {
+        ScenarioAddedEventAvro avro = (ScenarioAddedEventAvro) event.getPayload();
+        String hubId = event.getHubId();
+        String name = avro.getName();
+        Optional<Scenario> possibleScenario = scenarioRepo.findByHubIdAndName(hubId, name);
+        if (possibleScenario.isPresent()) {
+            scenarioRepo.deleteByHubIdAndName(hubId,name);
+        } else {
+            Scenario entity = scenarioMapper.toEntity(hubId, avro);
+            scenarioRepo.save(entity);
+        }
+
+    }
+
     private void processDeviceRemoved(HubEventAvro event) {
 
 
@@ -63,12 +83,6 @@ public class HubEventService {
     }
 
     private void processScenarioRemoved(HubEventAvro event) {
-    }
-
-    @Transactional
-    private void processScenarioAdded(HubEventAvro event) {
-        ScenarioAddedEventAvro avro = (ScenarioAddedEventAvro) event.getPayload();
-
     }
 
 
