@@ -1,19 +1,19 @@
-spring:
-  kafka:
-    bootstrap-servers: "localhost:9092"
-    topics:
-      snapshots: "telemetry.hubs.snapshots.v1"
-      events: "telemetry.hubs.events.v1"
-    consumer-groups:
-      snapshots: "analyzer-snapshots-group"
-      events: "analyzer-events-group"
-    consumer:
-      group-id: "analyzer-group"
-      auto-offset-reset: "earliest"
-      key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
-      value-deserializer: "org.springframework.kafka.support.serializer.ErrorHandlingDeserializer"
-      properties:
-        spring.deserializer.value.delegate.class: "ru.yandex.practicum.kafka.serializer.HubEventDeserializer"
+kafka:
+  bootstrap-servers: "localhost:9092"
+
+  snapshots:
+    topic: "telemetry.hubs.snapshots.v1"
+    group-id: "analyzer-snapshots-group"
+    auto-offset-reset: "earliest"
+    key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+    value-deserializer: "ru.yandex.practicum.kafka.serializer.SensorSnapshotDeserializer"
+
+  events:
+    topic: "telemetry.hubs.events.v1"
+    group-id: "analyzer-events-group"
+    auto-offset-reset: "earliest"
+    key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+    value-deserializer: "ru.yandex.practicum.kafka.serializer.HubEventDeserializer"
 
 
 

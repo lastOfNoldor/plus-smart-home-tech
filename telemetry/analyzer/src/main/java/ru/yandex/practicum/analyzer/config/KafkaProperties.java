@@ -1,24 +1,24 @@
 package ru.yandex.practicum.analyzer.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 @ConfigurationProperties(prefix = "kafka")
 public class KafkaProperties {
     private final String bootstrapServers;
+    private final ConsumerProperties snapshots;
+    private final ConsumerProperties events;
 
-    private final String snapshotsTopic;
-    private final String snapshotsGroupId;
-    private final String snapshotsKeyDeserializer;
-    private final String snapshotsValueDeserializer;
-    private final String snapshotsAutoOffsetReset;
-
-    private final String eventsTopic;
-    private final String eventsGroupId;
-    private final String eventsKeyDeserializer;
-    private final String eventsValueDeserializer;
-    private final String eventsAutoOffsetReset;
+    @Getter
+    @RequiredArgsConstructor
+    public static class ConsumerProperties {
+        private final String topic;
+        private final String groupId;
+        private final String autoOffsetReset;
+        private final String keyDeserializer;
+        private final String valueDeserializer;
+    }
 }
