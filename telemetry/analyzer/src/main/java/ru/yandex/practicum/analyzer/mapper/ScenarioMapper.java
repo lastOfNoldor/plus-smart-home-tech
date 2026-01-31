@@ -8,7 +8,7 @@ import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.collector.model.hub.ActionType;
 import ru.yandex.practicum.telemetry.collector.model.hub.ConditionOperation;
 import ru.yandex.practicum.telemetry.collector.model.hub.ConditionType;
-import ru.yandex.practicum.telemetry.collector.model.hub.DeviceType;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,6 @@ public class ScenarioMapper {
         scenario.setHubId(hubId);
         scenario.setName(avroEvent.getName());
 
-        // Маппинг условий
         Map<String, Condition> conditions = new HashMap<>();
         for (ScenarioConditionAvro avroCond : avroEvent.getConditions()) {
             Condition condition = new Condition();
@@ -48,7 +47,6 @@ public class ScenarioMapper {
         return scenario;
     }
 
-    // ENUM мапперы
     private ConditionType mapConditionType(ConditionTypeAvro avroType) {
         return ConditionType.valueOf(avroType.name());
     }
@@ -61,7 +59,6 @@ public class ScenarioMapper {
         return ActionType.valueOf(avroType.name());
     }
 
-    // Преобразование union {int, boolean} → Integer
     private Integer mapValue(Object avroValue) {
         return switch (avroValue) {
             case null -> null;
