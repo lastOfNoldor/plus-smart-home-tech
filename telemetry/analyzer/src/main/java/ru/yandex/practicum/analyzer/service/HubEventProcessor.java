@@ -5,15 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.analyzer.config.KafkaProperties;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 
-import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
-
 import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @Slf4j
@@ -25,13 +23,12 @@ public class HubEventProcessor implements Runnable {
 
     @Override
     public void run() {
-        String topic = kafkaProperties.getEvents().getTopic(); // или kafkaProperties.getEvents().getTopic()
+        String topic = kafkaProperties.getEvents().getTopic();
         log.info("Запуск HubEventProcessor для топика: {}", topic);
-
         try {
             hubEventConsumer.subscribe(List.of(topic));
 
-            while (!Thread.currentThread().isInterrupted()) {
+            while (true) {
                 try {
                     ConsumerRecords<String, HubEventAvro> records = hubEventConsumer.poll(Duration.ofMillis(100));
 
@@ -42,13 +39,11 @@ public class HubEventProcessor implements Runnable {
 
                 } catch (Exception e) {
                     log.error("Ошибка при обработке сообщений Kafka", e);
-                    // Можно добавить паузу перед повторной попыткой
-                    Thread.sleep(1000);
+
                 }
             }
-        } catch (InterruptedException e) {
-            log.info("HubEventProcessor прерван");
-            Thread.currentThread().interrupt();
+        } catch (WakeupException e) {
+            log.info("Получен сигнал WakeupException, начинаем graceful shutdown");
         } finally {
             log.info("Завершение HubEventProcessor...");
             hubEventConsumer.close();
@@ -60,18 +55,18 @@ public class HubEventProcessor implements Runnable {
             try {
                 log.debug("Обработка события: ключ={}, partition={}, offset={}",
                         record.key(), record.partition(), record.offset());
-
                 hubEventService.processEvent(record.value());
-
             } catch (Exception e) {
                 log.error("Ошибка обработки события (partition={}, offset={}): {}",
                         record.partition(), record.offset(), e.getMessage(), e);
-                // Решение: пропустить и продолжить или отправить в DLQ
             }
         }
 
-        // Фиксация offset после успешной обработки ВСЕХ записей
         hubEventConsumer.commitSync();
         log.debug("Зафиксированы offset для {} сообщений", records.count());
+    }
+
+    public void shutdown() {
+        hubEventConsumer.wakeup();
     }
 }

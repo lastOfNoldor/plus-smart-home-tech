@@ -16,14 +16,14 @@ import java.util.Optional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SnapshotProcessor implements Runnable {
+public class SnapshotProcessor {
 
     private final Consumer<String, SensorsSnapshotAvro> snapshotsConsumer;
     private final KafkaProperties props;
     private final String TOPIC = props.getSnapshots().getTopic();
+    private final SnapshotProcessor snapshotProcessor;
 
-    @Override
-    public void run() {
+    public void start() {
         log.info("Запуск SnapshotProcessor...");
         snapshotsConsumer.subscribe(List.of(TOPIC));
 
@@ -33,11 +33,13 @@ public class SnapshotProcessor implements Runnable {
             for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
                 log.debug("Обработка события: ключ={}, partition={}, offset={}",
                         record.key(), record.partition(), record.offset());
-                Optional<SensorsSnapshotAvro> snapshot = aggregator.updateState(record.value());
+                Optional<SensorsSnapshotAvro> snapshot = snapshotProcessor.updateState(record.value());
             }
-
-            // Ручной commit offset
             snapshotsConsumer.commitSync();
         }
+    }
+
+    public void shutdown() {
+        snapshotsConsumer.wakeup();
     }
 }
