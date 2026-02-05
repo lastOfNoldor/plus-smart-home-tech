@@ -1,11 +1,11 @@
-package ru.yandex.practicum.analyzer.client;
+package ru.yandex.practicum.telemetry.analyzer.client;
 
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.analyzer.dto.SnapshotToHubRouterDto;
+import ru.yandex.practicum.telemetry.analyzer.dto.SnapshotToHubRouterDto;
 import ru.yandex.practicum.grpc.telemetry.hub_event.ActionTypeProto;
 import ru.yandex.practicum.grpc.telemetry.hub_event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.hub_event.DeviceActionRequest;

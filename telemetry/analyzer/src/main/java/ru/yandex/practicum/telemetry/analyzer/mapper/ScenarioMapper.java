@@ -1,9 +1,9 @@
-package ru.yandex.practicum.analyzer.mapper;
+package ru.yandex.practicum.telemetry.analyzer.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.analyzer.model.Action;
-import ru.yandex.practicum.analyzer.model.Condition;
-import ru.yandex.practicum.analyzer.model.Scenario;
+import ru.yandex.practicum.telemetry.analyzer.model.Action;
+import ru.yandex.practicum.telemetry.analyzer.model.Condition;
+import ru.yandex.practicum.telemetry.analyzer.model.Scenario;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.collector.model.hub.ActionType;
 import ru.yandex.practicum.telemetry.collector.model.hub.ConditionOperation;

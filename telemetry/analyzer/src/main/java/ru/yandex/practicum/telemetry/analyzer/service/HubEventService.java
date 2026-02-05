@@ -1,17 +1,17 @@
-package ru.yandex.practicum.analyzer.service;
+package ru.yandex.practicum.telemetry.analyzer.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.analyzer.mapper.ScenarioMapper;
-import ru.yandex.practicum.analyzer.model.Scenario;
-import ru.yandex.practicum.analyzer.model.Sensor;
-import ru.yandex.practicum.analyzer.repository.ActionRepository;
-import ru.yandex.practicum.analyzer.repository.ConditionRepository;
-import ru.yandex.practicum.analyzer.repository.ScenarioRepository;
-import ru.yandex.practicum.analyzer.repository.SensorRepository;
+import ru.yandex.practicum.telemetry.analyzer.mapper.ScenarioMapper;
+import ru.yandex.practicum.telemetry.analyzer.model.Scenario;
+import ru.yandex.practicum.telemetry.analyzer.model.Sensor;
+import ru.yandex.practicum.telemetry.analyzer.repository.ActionRepository;
+import ru.yandex.practicum.telemetry.analyzer.repository.ConditionRepository;
+import ru.yandex.practicum.telemetry.analyzer.repository.ScenarioRepository;
+import ru.yandex.practicum.telemetry.analyzer.repository.SensorRepository;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.collector.model.hub.*;
 
