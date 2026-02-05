@@ -105,6 +105,10 @@
                     <mainClass>ru.yandex.practicum.telemetry.aggregator.Aggregator</mainClass>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>io.github.ascopes</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
+            </plugin>
 
             <!-- Maven Compiler Plugin -->
             <plugin>

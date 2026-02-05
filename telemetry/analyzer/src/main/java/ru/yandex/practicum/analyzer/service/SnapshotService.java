@@ -5,11 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.analyzer.client.HubRouterClient;
+import ru.yandex.practicum.analyzer.dto.SnapshotToHubRouterDto;
 import ru.yandex.practicum.analyzer.model.Action;
 import ru.yandex.practicum.analyzer.model.Condition;
 import ru.yandex.practicum.analyzer.model.Scenario;
 import ru.yandex.practicum.analyzer.repository.ScenarioRepository;
 import ru.yandex.practicum.kafka.telemetry.event.*;
+import ru.yandex.practicum.telemetry.collector.model.hub.ActionType;
 import ru.yandex.practicum.telemetry.collector.model.hub.ConditionType;
 
 import java.util.List;
@@ -62,16 +64,19 @@ public class SnapshotService {
         for (Map.Entry<String, Action> actionEntry : actions.entrySet()) {
             String sensorId = actionEntry.getKey();
             Action action = actionEntry.getValue();
-            hubRouterClient.sendDeviceAction(
-                    hubId,
-                    scenario.getName(),
-                    sensorId,
-                    action.getType(),
-                    action.getValue()
-            );
+            SnapshotToHubRouterDto hubRouterClientMessage = toHubRouterClient(hubId, scenario, sensorId, action);
+            hubRouterClient.sendToHubRouter(hubRouterClientMessage);
         }
         log.info("Сценарий '{}' выполнен, отправлено {} действий",
                 scenario.getName(), actions.size());
+    }
+
+    private SnapshotToHubRouterDto toHubRouterClient(String hubId, Scenario scenario, String sensorId, Action action) {
+        return new SnapshotToHubRouterDto(hubId,
+                scenario.getName(),
+                sensorId,
+                action.getType(),
+                action.getValue());
     }
 
     private boolean checkCondition(SensorStateAvro sensorStateAvro, Condition condition) {

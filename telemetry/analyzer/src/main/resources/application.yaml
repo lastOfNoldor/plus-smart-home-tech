@@ -14,6 +14,12 @@ kafka:
     auto-offset-reset: "earliest"
     key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
     value-deserializer: "ru.yandex.practicum.kafka.serializer.HubEventDeserializer"
-
+grpc:
+  client:
+    hub-router:
+      address: 'static://localhost:9090'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
 
 
