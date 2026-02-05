@@ -22,13 +22,13 @@ public class SnapshotProcessor {
 
     private final Consumer<String, SensorsSnapshotAvro> snapshotsConsumer;
     private final KafkaProperties props;
-    private final String TOPIC = props.getSnapshots().getTopic();
     private final SnapshotService snapshotService;
 
     public void start() {
         log.info("Запуск SnapshotProcessor...");
+        String topic = props.getSnapshots().getTopic();
         try {
-            snapshotsConsumer.subscribe(List.of(TOPIC));
+            snapshotsConsumer.subscribe(List.of(topic));
 
             while (true) {
                 try {
