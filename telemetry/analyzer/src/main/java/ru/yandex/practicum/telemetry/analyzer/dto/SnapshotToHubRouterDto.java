@@ -1,4 +1,4 @@
-package ru.yandex.practicum.analyzer.dto;
+package ru.yandex.practicum.telemetry.analyzer.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;

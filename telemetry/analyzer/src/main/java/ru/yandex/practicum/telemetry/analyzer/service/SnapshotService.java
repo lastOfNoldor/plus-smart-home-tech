@@ -1,15 +1,15 @@
-package ru.yandex.practicum.analyzer.service;
+package ru.yandex.practicum.telemetry.analyzer.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.analyzer.client.HubRouterClient;
-import ru.yandex.practicum.analyzer.dto.SnapshotToHubRouterDto;
-import ru.yandex.practicum.analyzer.model.Action;
-import ru.yandex.practicum.analyzer.model.Condition;
-import ru.yandex.practicum.analyzer.model.Scenario;
-import ru.yandex.practicum.analyzer.repository.ScenarioRepository;
+import ru.yandex.practicum.telemetry.analyzer.client.HubRouterClient;
+import ru.yandex.practicum.telemetry.analyzer.dto.SnapshotToHubRouterDto;
+import ru.yandex.practicum.telemetry.analyzer.model.Action;
+import ru.yandex.practicum.telemetry.analyzer.model.Condition;
+import ru.yandex.practicum.telemetry.analyzer.model.Scenario;
+import ru.yandex.practicum.telemetry.analyzer.repository.ScenarioRepository;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.collector.model.hub.ActionType;
 import ru.yandex.practicum.telemetry.collector.model.hub.ConditionType;
