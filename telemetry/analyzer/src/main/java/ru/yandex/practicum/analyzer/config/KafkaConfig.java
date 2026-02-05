@@ -17,11 +17,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KafkaConfig {
     private final KafkaProperties kafkaProperties;
-    private final KafkaProperties.ConsumerProperties snapshots = kafkaProperties.getSnapshots();
-    private final KafkaProperties.ConsumerProperties events = kafkaProperties.getEvents();
 
     @Bean("snapshotsConsumer")
     public KafkaConsumer<String, Object> snapshotsConsumer() {
+        KafkaProperties.ConsumerProperties snapshots = kafkaProperties.getSnapshots();
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, snapshots.getGroupId());
@@ -35,6 +34,7 @@ public class KafkaConfig {
 
     @Bean("eventsConsumer")
     public KafkaConsumer<String, Object> eventsConsumer() {
+        KafkaProperties.ConsumerProperties events = kafkaProperties.getEvents();
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, events.getGroupId());
