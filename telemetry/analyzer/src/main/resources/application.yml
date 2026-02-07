@@ -10,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -31,12 +31,20 @@ kafka:
     auto-offset-reset: "earliest"
     key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
     value-deserializer: "ru.yandex.practicum.kafka.serializer.HubEventDeserializer"
+
+server:
+  port: 8081
+
 grpc:
   client:
     hub-router:
-      address: 'static://localhost:59091'
+      address: 'static://localhost:59090'
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
+logging:
+  level:
+    ru.yandex.practicum.telemetry.analyzer.SnapshotService: INFO
+    ru.yandex.practicum.telemetry.analyzer: DEBUG
 
 

@@ -17,9 +17,9 @@ public class Scenario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false)
     private String hubId;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(

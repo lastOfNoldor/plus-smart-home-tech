@@ -1,7 +1,7 @@
 package ru.yandex.practicum.telemetry.analyzer.client;
 
 import io.grpc.StatusRuntimeException;
-import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class HubRouterClient {
     @GrpcClient("hub-router")
     private final HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterStub;
 
-    @Autowired  // или @Inject
+    @Autowired
     public HubRouterClient(@GrpcClient("hub-router") HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterStub) {
         this.hubRouterStub = hubRouterStub;
     }

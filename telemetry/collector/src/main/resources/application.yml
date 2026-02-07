@@ -5,7 +5,7 @@ spring:
 
 grpc:
   server:
-    port: 59090
+    port: 59091
     enable-reflection: true
 
 kafka:
