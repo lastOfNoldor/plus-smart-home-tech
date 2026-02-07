@@ -83,7 +83,7 @@ public class SnapshotService {
         Object data = sensorStateAvro.getData();
         ConditionType type = condition.getType();
         Integer sensorValue = extractValue(type, data);
-//        if (sensorValue == null) return false;
+        if (sensorValue == null) return false;
 
         boolean result = switch (condition.getOperation()) {
             case EQUALS -> sensorValue.equals(condition.getValue());
@@ -119,10 +119,10 @@ public class SnapshotService {
                 yield null;
             }
             case TEMPERATURE -> {
-                if (data.getClass().equals(TemperatureSensorAvro.class)) {
-                    yield ((TemperatureSensorAvro) data).getTemperatureC();
-                } else if (data.getClass().equals(ClimateSensorAvro.class)) {
+                if (data.getClass().equals(ClimateSensorAvro.class)) {
                     yield ((ClimateSensorAvro) data).getTemperatureC();
+                } else if (data.getClass().equals(TemperatureSensorAvro.class)) {
+                    yield ((TemperatureSensorAvro) data).getTemperatureC();
                 }
                 yield null;
             }
