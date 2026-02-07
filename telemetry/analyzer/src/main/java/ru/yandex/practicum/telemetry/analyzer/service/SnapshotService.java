@@ -83,7 +83,7 @@ public class SnapshotService {
         Object data = sensorStateAvro.getData();
         ConditionType type = condition.getType();
         Integer sensorValue = extractValue(type, data);
-        if (sensorValue == null) return false;
+//        if (sensorValue == null) return false;
 
         boolean result = switch (condition.getOperation()) {
             case EQUALS -> sensorValue.equals(condition.getValue());
@@ -101,39 +101,39 @@ public class SnapshotService {
     private Integer extractValue(ConditionType type, Object data) {
         return switch (type) {
             case MOTION -> {
-                if (data instanceof MotionSensorAvro) {
+                if (data.getClass().equals(MotionSensorAvro.class)) {
                     yield ((MotionSensorAvro) data).getMotion() ? 1 : 0;
                 }
                 yield null;
             }
             case LUMINOSITY -> {
-                if (data instanceof LightSensorAvro) {
+                if (data.getClass().equals(LightSensorAvro.class)) {
                     yield ((LightSensorAvro) data).getLuminosity();
                 }
                 yield null;
             }
             case SWITCH -> {
-                if (data instanceof SwitchSensorAvro) {
+                if (data.getClass().equals(SwitchSensorAvro.class)) {
                     yield ((SwitchSensorAvro) data).getState() ? 1 : 0;
                 }
                 yield null;
             }
             case TEMPERATURE -> {
-                if (data instanceof TemperatureSensorAvro) {
+                if (data.getClass().equals(TemperatureSensorAvro.class)) {
                     yield ((TemperatureSensorAvro) data).getTemperatureC();
-                } else if (data instanceof ClimateSensorAvro) {
+                } else if (data.getClass().equals(ClimateSensorAvro.class)) {
                     yield ((ClimateSensorAvro) data).getTemperatureC();
                 }
                 yield null;
             }
             case CO2LEVEL -> {
-                if (data instanceof ClimateSensorAvro) {
+                if (data.getClass().equals(ClimateSensorAvro.class)) {
                     yield ((ClimateSensorAvro) data).getCo2Level();
                 }
                 yield null;
             }
             case HUMIDITY -> {
-                if (data instanceof ClimateSensorAvro) {
+                if (data.getClass().equals(ClimateSensorAvro.class)) {
                     yield ((ClimateSensorAvro) data).getHumidity();
                 }
                 yield null;
