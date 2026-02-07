@@ -6,5 +6,4 @@ import ru.yandex.practicum.telemetry.analyzer.model.Condition;
 import java.util.List;
 
 public interface ConditionRepository extends JpaRepository<Condition, Long> {
-    void deleteAll(List<Condition> conditionsToDelete);
 }

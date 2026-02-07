@@ -8,6 +8,8 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +21,7 @@ public class KafkaConfig {
     private final KafkaProperties kafkaProperties;
 
     @Bean("snapshotsConsumer")
-    public KafkaConsumer<String, Object> snapshotsConsumer() {
+    public KafkaConsumer<String, SensorsSnapshotAvro> snapshotsConsumer() {
         KafkaProperties.ConsumerProperties snapshots = kafkaProperties.getSnapshots();
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
@@ -33,7 +35,7 @@ public class KafkaConfig {
     }
 
     @Bean("eventsConsumer")
-    public KafkaConsumer<String, Object> eventsConsumer() {
+    public KafkaConsumer<String, HubEventAvro> eventsConsumer() {
         KafkaProperties.ConsumerProperties events = kafkaProperties.getEvents();
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
