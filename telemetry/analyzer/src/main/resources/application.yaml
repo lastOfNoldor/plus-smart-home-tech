@@ -10,12 +10,10 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate  # или update для разработки
-    show-sql: false  # поставь true для отладки SQL
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
 
 kafka:
   bootstrap-servers: "localhost:9092"

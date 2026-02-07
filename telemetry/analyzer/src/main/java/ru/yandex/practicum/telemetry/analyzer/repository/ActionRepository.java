@@ -6,5 +6,5 @@ import ru.yandex.practicum.telemetry.analyzer.model.Action;
 import java.util.List;
 
 public interface ActionRepository extends JpaRepository<Action, Long> {
-    void deleteAll(List<Action> actionsToDelete);
+
 }
