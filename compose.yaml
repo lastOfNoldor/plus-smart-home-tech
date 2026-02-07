@@ -1,11 +1,23 @@
+version: '3.8'
+
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: analyzer-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: analyzer_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
   kafka:
     image: confluentinc/confluent-local:7.4.3
     hostname: kafka
     container_name: kafka
     ports:
-      - "9092:9092" # for client connections
-      - "9101:9101" # JMX
+      - "9092:9092"
+      - "9101:9101"
     restart: unless-stopped
     environment:
       KAFKA_NODE_ID: 1
@@ -22,14 +34,18 @@ services:
     container_name: kafka-init-topics
     depends_on:
       - kafka
-    command: "bash -c \
-                'kafka-topics --create --topic telemetry.sensors.v1 \
-                             --partitions 1 --replication-factor 1 --if-not-exists \
-                             --bootstrap-server kafka:29092 && \
-                kafka-topics --create --topic telemetry.snapshots.v1 \
-                             --partitions 1 --replication-factor 1 --if-not-exists \
-                             --bootstrap-server kafka:29092 && \
-                kafka-topics --create --topic telemetry.hubs.v1 \
-                             --partitions 1 --replication-factor 1 --if-not-exists \
-                             --bootstrap-server kafka:29092'"
+    command: >
+      bash -c "
+      echo 'Waiting for Kafka...';
+      sleep 30;
+      kafka-topics --create --topic telemetry.sensors.v1 --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092;
+      kafka-topics --create --topic telemetry.snapshots.v1 --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092;
+      kafka-topics --create --topic telemetry.hubs.v1 --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092;
+      kafka-topics --create --topic telemetry.hubs.events.v1 --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092;
+      kafka-topics --create --topic telemetry.hubs.snapshots.v1 --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092;
+      echo 'Topics created successfully'
+      "
     init: true
+
+volumes:
+  postgres_data:

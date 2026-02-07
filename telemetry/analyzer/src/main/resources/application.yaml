@@ -1,3 +1,22 @@
+spring:
+  application:
+    name: analyzer
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/analyzer_db
+    username: postgres
+    password: 2212
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # или update для разработки
+    show-sql: false  # поставь true для отладки SQL
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
 kafka:
   bootstrap-servers: "localhost:9092"
 
