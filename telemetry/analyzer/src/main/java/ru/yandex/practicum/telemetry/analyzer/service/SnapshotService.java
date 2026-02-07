@@ -26,24 +26,78 @@ public class SnapshotService {
 
 
     public void processSnapshot(SensorsSnapshotAvro snapshot) {
+        // ВРЕМЕННОЕ ЛОГИРОВАНИЕ ДЛЯ ТЕСТОВ
+        System.out.println("=== ANALYZER DEBUG LOG ===");
+        System.out.println("Processing snapshot for hub: " + snapshot.getHubId());
+        System.out.println("Timestamp: " + snapshot.getTimestamp());
+        System.out.println("Sensors in snapshot: " + snapshot.getSensorsState().keySet());
+
         String hubId = snapshot.getHubId();
         List<Scenario> scenarios = scenarioRepository.findByHubId(hubId);
 
+        System.out.println("Found " + scenarios.size() + " scenarios for hub " + hubId);
+
         for (Scenario scenario : scenarios) {
+            System.out.println("\n--- Checking scenario: " + scenario.getName() + " ---");
+            System.out.println("Conditions: " + scenario.getConditions());
+
             if (checkScenarioConditions(scenario, snapshot)) {
+                System.out.println("✅ Scenario '" + scenario.getName() + "' conditions MET!");
                 sendScenarioActions(scenario, hubId);
+            } else {
+                System.out.println("❌ Scenario '" + scenario.getName() + "' conditions NOT met");
             }
         }
+        System.out.println("=== END DEBUG LOG ===\n");
     }
 
     private boolean checkScenarioConditions(Scenario scenario, SensorsSnapshotAvro snapshot) {
         Map<String, Condition> conditions = scenario.getConditions();
 
         for (Map.Entry<String, Condition> entry : conditions.entrySet()) {
-            if (!isConditionMet(entry.getKey(), entry.getValue(), snapshot)) {
+            String sensorId = entry.getKey();
+            Condition condition = entry.getValue();
+
+            System.out.println("\nChecking condition for sensor: " + sensorId);
+            System.out.println("Condition type: " + condition.getType());
+            System.out.println("Condition operation: " + condition.getOperation());
+            System.out.println("Condition value: " + condition.getValue());
+
+            Map<String, SensorStateAvro> sensorsStates = snapshot.getSensorsState();
+            SensorStateAvro sensorStateAvro = sensorsStates.get(sensorId);
+
+            if (sensorStateAvro == null) {
+                System.out.println("⚠️ Sensor " + sensorId + " NOT FOUND in snapshot!");
+                System.out.println("Available sensors: " + sensorsStates.keySet());
+                return false;
+            }
+
+            Object data = sensorStateAvro.getData();
+            System.out.println("Sensor data class: " + (data != null ? data.getClass().getName() : "null"));
+            System.out.println("Sensor data: " + data);
+
+            Integer sensorValue = extractValue(condition.getType(), data);
+            System.out.println("Extracted value: " + sensorValue);
+
+            if (sensorValue == null) {
+                System.out.println("❌ Could not extract value for type: " + condition.getType());
+                return false;
+            }
+
+            boolean conditionMet = switch (condition.getOperation()) {
+                case EQUALS -> sensorValue.equals(condition.getValue());
+                case GREATER_THAN -> sensorValue > condition.getValue();
+                case LOWER_THAN -> sensorValue < condition.getValue();
+            };
+
+            System.out.println("Condition result: " + sensorValue + " " +
+                    condition.getOperation() + " " + condition.getValue() + " = " + conditionMet);
+
+            if (!conditionMet) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -99,46 +153,68 @@ public class SnapshotService {
     }
 
     private Integer extractValue(ConditionType type, Object data) {
+        // ДОБАВЬТЕ ЛОГИРОВАНИЕ СЮДА ТОЖЕ
+        System.out.println("DEBUG extractValue - type: " + type + ", data class: " + (data != null ? data.getClass().getSimpleName() : "null"));
+
         return switch (type) {
             case MOTION -> {
-                if (data instanceof MotionSensorAvro) {
-                    yield ((MotionSensorAvro) data).getMotion() ? 1 : 0;
+                if (data instanceof MotionSensorAvro motionSensor) {
+                    int value = motionSensor.getMotion() ? 1 : 0;
+                    System.out.println("DEBUG: Motion sensor value = " + value);
+                    yield value;
                 }
+                System.out.println("DEBUG: Not a MotionSensorAvro");
                 yield null;
             }
             case LUMINOSITY -> {
-                if (data instanceof LightSensorAvro) {
-                    yield ((LightSensorAvro) data).getLuminosity();
+                if (data instanceof LightSensorAvro lightSensor) {
+                    int value = lightSensor.getLuminosity();
+                    System.out.println("DEBUG: Light sensor value = " + value);
+                    yield value;
                 }
+                System.out.println("DEBUG: Not a LightSensorAvro");
                 yield null;
             }
             case SWITCH -> {
-                if (data instanceof SwitchSensorAvro) {
-                    yield ((SwitchSensorAvro) data).getState() ? 1 : 0;
+                if (data instanceof SwitchSensorAvro switchSensor) {
+                    int value = switchSensor.getState() ? 1 : 0;
+                    System.out.println("DEBUG: Switch sensor value = " + value);
+                    yield value;
                 }
+                System.out.println("DEBUG: Not a SwitchSensorAvro");
                 yield null;
             }
             case TEMPERATURE -> {
-                if (data instanceof TemperatureSensorAvro) {
-                    yield ((TemperatureSensorAvro) data).getTemperatureC();
-                } else if (data instanceof ClimateSensorAvro) {
-                    yield ((ClimateSensorAvro) data).getTemperatureC();
+                if (data instanceof TemperatureSensorAvro tempSensor) {
+                    int value = tempSensor.getTemperatureC();
+                    System.out.println("DEBUG: Temperature sensor (simple) value = " + value);
+                    yield value;
+                } else if (data instanceof ClimateSensorAvro climateSensor) {
+                    int value = climateSensor.getTemperatureC();
+                    System.out.println("DEBUG: Climate sensor temperature value = " + value);
+                    yield value;
                 }
+                System.out.println("DEBUG: Not a temperature sensor");
                 yield null;
             }
             case CO2LEVEL -> {
-                if (data instanceof ClimateSensorAvro) {
-                    yield ((ClimateSensorAvro) data).getCo2Level();
+                if (data instanceof ClimateSensorAvro climateSensor) {
+                    int value = climateSensor.getCo2Level();
+                    System.out.println("DEBUG: CO2 level value = " + value);
+                    yield value;
                 }
+                System.out.println("DEBUG: Not a ClimateSensorAvro");
                 yield null;
             }
             case HUMIDITY -> {
-                if (data instanceof ClimateSensorAvro) {
-                    yield ((ClimateSensorAvro) data).getHumidity();
+                if (data instanceof ClimateSensorAvro climateSensor) {
+                    int value = climateSensor.getHumidity();
+                    System.out.println("DEBUG: Humidity value = " + value);
+                    yield value;
                 }
+                System.out.println("DEBUG: Not a ClimateSensorAvro");
                 yield null;
             }
         };
     }
-
 }
