@@ -101,19 +101,19 @@ public class SnapshotService {
     private Integer extractValue(ConditionType type, Object data) {
         return switch (type) {
             case MOTION -> {
-                if (data.getClass().equals(MotionSensorAvro.class)) {
+                if (data instanceof MotionSensorAvro) {
                     yield ((MotionSensorAvro) data).getMotion() ? 1 : 0;
                 }
                 yield null;
             }
             case LUMINOSITY -> {
-                if (data.getClass().equals(LightSensorAvro.class)) {
+                if (data instanceof LightSensorAvro) {
                     yield ((LightSensorAvro) data).getLuminosity();
                 }
                 yield null;
             }
             case SWITCH -> {
-                if (data.getClass().equals(SwitchSensorAvro.class)) {
+                if (data instanceof SwitchSensorAvro) {
                     yield ((SwitchSensorAvro) data).getState() ? 1 : 0;
                 }
                 yield null;
@@ -127,13 +127,13 @@ public class SnapshotService {
                 yield null;
             }
             case CO2LEVEL -> {
-                if (data.getClass().equals(ClimateSensorAvro.class)) {
+                if (data instanceof ClimateSensorAvro) {
                     yield ((ClimateSensorAvro) data).getCo2Level();
                 }
                 yield null;
             }
             case HUMIDITY -> {
-                if (data.getClass().equals(ClimateSensorAvro.class)) {
+                if (data instanceof ClimateSensorAvro) {
                     yield ((ClimateSensorAvro) data).getHumidity();
                 }
                 yield null;
