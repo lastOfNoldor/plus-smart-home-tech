@@ -24,13 +24,15 @@ public class AggregationStarter {
     private final Consumer<String, SensorEventAvro> consumer;
     private final Producer<String, SensorsSnapshotAvro> producer;
     private final SnapshotAggregator aggregator;
-    private static final String CONSUMER_TOPIC = "telemetry.sensors.v1";
-    private static final String PRODUCER_TOPIC = "telemetry.snapshots.v1";
+    @Value("${spring.kafka.topics.consumer}")
+    private String consumerTopic;
+    @Value("${spring.kafka.topics.producer}")
+    private String producerTopic;
 
     public void start() {
         try {
             log.info("Запуск AggregationStarter...");
-            consumer.subscribe(List.of(CONSUMER_TOPIC));
+            consumer.subscribe(List.of(consumerTopic));
             while (true) {
                 ConsumerRecords<String, SensorEventAvro> records = consumer.poll(Duration.ofSeconds(10));
                 log.debug("Получено {} событий", records.count());
@@ -39,7 +41,7 @@ public class AggregationStarter {
                             record.key(), record.partition(), record.offset());
                     Optional<SensorsSnapshotAvro> snapshot = aggregator.updateState(record.value());
                     if (snapshot.isPresent()) {
-                        ProducerRecord<String, SensorsSnapshotAvro> producerRecord = new ProducerRecord<>(PRODUCER_TOPIC, snapshot.get().getHubId(), snapshot.get());
+                        ProducerRecord<String, SensorsSnapshotAvro> producerRecord = new ProducerRecord<>(producerTopic, snapshot.get().getHubId(), snapshot.get());
                         producer.send(producerRecord, (metadata, exception) -> {
                             if (exception != null) {
                                 log.error("Не удалось отправить snapshot {}", exception.toString());

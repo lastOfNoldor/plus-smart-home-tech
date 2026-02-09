@@ -70,7 +70,6 @@ public class SnapshotAggregator {
 
         storage.put(hubId, newSnapshot);
         return Optional.of(newSnapshot);
-
     }
 
     private boolean validateUpdatedState(SensorEventAvro event, SensorStateAvro existingState) {
@@ -97,7 +96,6 @@ public class SnapshotAggregator {
         sensorsState.put(deviceId, updatedState);
     }
 
-
     private void addNewState (SensorEventAvro event, Map<String, SensorStateAvro> sensorsState) {
         Instant eventTimestamp = event.getTimestamp();
         String deviceId = event.getId();
@@ -107,6 +105,4 @@ public class SnapshotAggregator {
                 .build();
         sensorsState.put(deviceId, newState);
     }
-
-
 }
