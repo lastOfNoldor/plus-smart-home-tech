@@ -1,9 +1,10 @@
 package ru.yandex.practicum.telemetry.analyzer.service;
 
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.telemetry.analyzer.client.HubRouterClient;
 import ru.yandex.practicum.telemetry.analyzer.dto.SnapshotToHubRouterDto;
 import ru.yandex.practicum.telemetry.analyzer.model.Action;
@@ -11,7 +12,6 @@ import ru.yandex.practicum.telemetry.analyzer.model.Condition;
 import ru.yandex.practicum.telemetry.analyzer.model.Scenario;
 import ru.yandex.practicum.telemetry.analyzer.repository.ScenarioRepository;
 import ru.yandex.practicum.kafka.telemetry.event.*;
-import ru.yandex.practicum.telemetry.collector.model.hub.ActionType;
 import ru.yandex.practicum.telemetry.collector.model.hub.ConditionType;
 
 import java.util.List;
@@ -20,6 +20,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SnapshotService {
     private final ScenarioRepository scenarioRepository;
     private final HubRouterClient hubRouterClient;
@@ -119,10 +120,10 @@ public class SnapshotService {
                 yield null;
             }
             case TEMPERATURE -> {
-                if (data instanceof TemperatureSensorAvro) {
-                    yield ((TemperatureSensorAvro) data).getTemperatureC();
-                } else if (data instanceof ClimateSensorAvro) {
+                if (data.getClass().equals(ClimateSensorAvro.class)) {
                     yield ((ClimateSensorAvro) data).getTemperatureC();
+                } else if (data.getClass().equals(TemperatureSensorAvro.class)) {
+                    yield ((TemperatureSensorAvro) data).getTemperatureC();
                 }
                 yield null;
             }

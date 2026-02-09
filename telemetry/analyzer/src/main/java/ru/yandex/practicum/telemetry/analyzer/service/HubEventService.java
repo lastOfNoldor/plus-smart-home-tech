@@ -2,6 +2,8 @@ package ru.yandex.practicum.telemetry.analyzer.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +29,21 @@ public class HubEventService {
     private final SensorRepository sensorRepo;
     private final ScenarioMapper scenarioMapper;
 
+    @Transactional
+    public void processEvent(ConsumerRecords<String, HubEventAvro> records) {
+        for (ConsumerRecord<String, HubEventAvro> record : records) {
+            try {
+                log.debug("Обработка события: ключ={}, partition={}, offset={}",
+                        record.key(), record.partition(), record.offset());
+                extractEvent(record.value());
+            } catch (Exception e) {
+                log.error("Ошибка обработки события (partition={}, offset={}): {}",
+                        record.partition(), record.offset(), e.getMessage(), e);
+            }
+        }
+    }
 
-    public void processEvent(HubEventAvro event) {
+    private void extractEvent(HubEventAvro event) {
         HubEventType type = determineEventType(event);
         switch (type){
             case SCENARIO_ADDED :
@@ -61,8 +76,7 @@ public class HubEventService {
         }
         throw new IllegalArgumentException("Unknown payload type");
     }
-
-    @Transactional
+    
     private void processScenarioAdded(HubEventAvro event) {
         try {
             ScenarioAddedEventAvro avro = (ScenarioAddedEventAvro) event.getPayload();
@@ -84,8 +98,7 @@ public class HubEventService {
         }
 
     }
-
-    @Transactional
+    
     private void processDeviceRemoved(HubEventAvro event) {
         DeviceRemovedEventAvro avro = (DeviceRemovedEventAvro) event.getPayload();
         String hubId = event.getHubId();
@@ -93,8 +106,7 @@ public class HubEventService {
         Optional<Sensor> existing = sensorRepo.findByIdAndHubId(id, hubId);
         existing.ifPresent(sensorRepo::delete);
     }
-
-    @Transactional
+    
     private void processDeviceAdded(HubEventAvro event) {
         try {
             DeviceAddedEventAvro avro = (DeviceAddedEventAvro) event.getPayload();
@@ -108,8 +120,7 @@ public class HubEventService {
             log.error("Ошибка целостности при сохранении сенсора: {}", e.getMessage());
         }
     }
-
-    @Transactional
+    
     private void processScenarioRemoved(HubEventAvro event) {
         ScenarioRemovedEventAvro avro = (ScenarioRemovedEventAvro) event.getPayload();
         String hubId = event.getHubId();

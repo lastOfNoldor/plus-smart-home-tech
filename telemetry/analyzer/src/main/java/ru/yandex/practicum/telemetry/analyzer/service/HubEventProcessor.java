@@ -51,17 +51,7 @@ public class HubEventProcessor implements Runnable {
     }
 
     private void processRecords(ConsumerRecords<String, HubEventAvro> records) {
-        for (ConsumerRecord<String, HubEventAvro> record : records) {
-            try {
-                log.debug("Обработка события: ключ={}, partition={}, offset={}",
-                        record.key(), record.partition(), record.offset());
-                hubEventService.processEvent(record.value());
-            } catch (Exception e) {
-                log.error("Ошибка обработки события (partition={}, offset={}): {}",
-                        record.partition(), record.offset(), e.getMessage(), e);
-            }
-        }
-
+        hubEventService.processEvent(records);
         hubEventConsumer.commitSync();
         log.debug("Зафиксированы offset для {} сообщений", records.count());
     }

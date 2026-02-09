@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: analyzer
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/analyzer_db
+    username: postgres
+    password: 2212
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+kafka:
+  bootstrap-servers: "localhost:9092"
+
+  snapshots:
+    topic: "telemetry.snapshots.v1"
+    group-id: "analyzer-snapshots-group"
+    auto-offset-reset: "earliest"
+    key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+    value-deserializer: "ru.yandex.practicum.kafka.serializer.SensorSnapshotDeserializer"
+
+  events:
+    topic: "telemetry.hubs.v1"
+    group-id: "analyzer-events-group"
+    auto-offset-reset: "earliest"
+    key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+    value-deserializer: "ru.yandex.practicum.kafka.serializer.HubEventDeserializer"
+
+server:
+  port: 8081
+
+grpc:
+  client:
+    hub-router:
+      address: 'static://localhost:59090'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+logging:
+  level:
+    ru.yandex.practicum.telemetry.analyzer.SnapshotService: INFO
+    ru.yandex.practicum.telemetry.analyzer: DEBUG
+
+

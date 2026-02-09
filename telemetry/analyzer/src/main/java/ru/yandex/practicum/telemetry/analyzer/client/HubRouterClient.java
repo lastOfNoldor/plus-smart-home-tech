@@ -1,9 +1,10 @@
 package ru.yandex.practicum.telemetry.analyzer.client;
 
 import io.grpc.StatusRuntimeException;
-import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.telemetry.analyzer.dto.SnapshotToHubRouterDto;
 import ru.yandex.practicum.grpc.telemetry.hub_event.ActionTypeProto;
@@ -16,11 +17,15 @@ import java.time.Instant;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class HubRouterClient {
 
     @GrpcClient("hub-router")
     private final HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterStub;
+
+    @Autowired
+    public HubRouterClient(@GrpcClient("hub-router") HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterStub) {
+        this.hubRouterStub = hubRouterStub;
+    }
 
     public void sendToHubRouter(SnapshotToHubRouterDto hubRouterClientMessage) {
         String hubId = hubRouterClientMessage.getHubId();

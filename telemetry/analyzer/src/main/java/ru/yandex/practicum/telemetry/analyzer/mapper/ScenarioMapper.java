@@ -27,13 +27,12 @@ public class ScenarioMapper {
             Condition condition = new Condition();
             condition.setType(mapConditionType(avroCond.getType()));
             condition.setOperation(mapConditionOperation(avroCond.getOperation()));
-            condition.setValue(mapValue(avroCond));
+            condition.setValue(mapValue(avroCond.getValue()));
 
             conditions.put(avroCond.getSensorId(), condition);
         }
         scenario.setConditions(conditions);
 
-        // Маппинг действий
         Map<String, Action> actions = new HashMap<>();
         for (DeviceActionAvro avroAction : avroEvent.getActions()) {
             Action action = new Action();
@@ -63,7 +62,7 @@ public class ScenarioMapper {
         return switch (avroValue) {
             case null -> null;
             case Integer integer -> integer;
-            case Boolean b -> Boolean.TRUE.equals(avroValue) ? 1 : 0;
+            case Boolean b -> b ? 1 : 0;
             default -> throw new IllegalArgumentException("Unsupported value type: " + avroValue.getClass());
         };
     }
