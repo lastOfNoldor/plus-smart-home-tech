@@ -1,0 +1,9 @@
+grpc:
+  client:
+    collector:
+      address: localhost:59091
+    hub-router:
+      address: localhost:59092
+
+  server:
+    port: 59093

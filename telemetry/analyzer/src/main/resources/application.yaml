@@ -1,0 +1,25 @@
+kafka:
+  bootstrap-servers: "localhost:9092"
+
+  snapshots:
+    topic: "telemetry.snapshots.v1"
+    group-id: "analyzer-snapshots-group"
+    auto-offset-reset: "earliest"
+    key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+    value-deserializer: "ru.yandex.practicum.kafka.serializer.SensorSnapshotDeserializer"
+
+  events:
+    topic: "telemetry.hubs.v1"
+    group-id: "analyzer-events-group"
+    auto-offset-reset: "earliest"
+    key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+    value-deserializer: "ru.yandex.practicum.kafka.serializer.HubEventDeserializer"
+grpc:
+  client:
+    hub-router:
+      address: 'static://localhost:59090'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+
+
